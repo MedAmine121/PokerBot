@@ -12,13 +12,13 @@ namespace PokerBot.IO
 {
     public class OutputHandler
     {
-        public static Player GetCards(Player player)
+        public static List<Card> GetCards(Player player)
         {
-            Bitmap card1 = GameApp.GetImage(player.Card1AutoId, 2);
-            Bitmap card2 = GameApp.GetImage(player.Card2AutoId, 2);
-            player.HoleCards.Add(ImageIdentifier.IdentifyCard(card1));
-            player.HoleCards.Add(ImageIdentifier.IdentifyCard(card2));
-            return player;
+            return GameApp.GetCards(player);
+        }
+        public static List<Player> GetOthersStatus()
+        {
+            return GameApp.GetOpponents();
         }
     }
 }

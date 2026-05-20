@@ -11,6 +11,7 @@ namespace PokerBot.Helpers
         public const string StartLocalGameAutoId = "QApplication.startWindow.centralwidget.pushButtonStart_Local_Game";
         public const string OKName = "OK";
         public const string CardRegex = "QApplication.gameTable.centralwidget.groupBox?1.pixmapLabel_card?1?2";
+        public const string GroupId = "QApplication.gameTable.centralwidget";
         public const string Card1Id = "a";
         public const string Card2Id = "b";
         public const string FlipsideFileName = "flipside";
@@ -23,5 +24,16 @@ namespace PokerBot.Helpers
         public const string Spades = "Spades";
         public const string Clubs = "Clubs";
         public const string CardFilesPath = "data\\gfx\\cards\\default_800x480";
+        public const string ActionFilesPath = "data\\gfx\\gui\\misc\\actionpics";
+    }
+    public enum Actions
+    {
+        Allin,
+        Bet,
+        Call,
+        Check,
+        Fold,
+        Raise,
+        Winner
     }
 }

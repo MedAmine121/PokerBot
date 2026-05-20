@@ -10,7 +10,7 @@ namespace PokerBot.Core
     {
         public static Player Me { get; set; } = new Player("0");
         public static int PotSize { get; set; } = 0;
-        public static List<Card> CommunityCards { get; set; } = new List<Card>();
+        public static List<Player> Others { get; set; } = new List<Player>();
         public enum State
         {
             Waiting,

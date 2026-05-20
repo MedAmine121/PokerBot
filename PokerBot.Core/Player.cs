@@ -10,6 +10,7 @@ namespace PokerBot.Core
         public string Card2AutoId { get; set; } = string.Empty;
         public int Chips { get; set; } = 0;
         public List<Card> HoleCards { get; set; }
+        public Actions? Status { get; set; } = null;
         public Player(string number)
         {
             HoleCards = new List<Card>();
