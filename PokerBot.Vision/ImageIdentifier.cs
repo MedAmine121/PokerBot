@@ -1,18 +1,21 @@
-﻿using PokerBot.Core;
+﻿using AForge.Imaging;
+using PokerBot.Core;
 using PokerBot.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AForge.Imaging;
+using Tesseract;
 
 namespace PokerBot.IO
 {
     public class ImageIdentifier
     {
         public static Dictionary<Card, Bitmap> CardTemplates { get; private set; } = new Dictionary<Card, Bitmap>();
+        public static Dictionary<Actions, Bitmap> ActionTemplates { get; private set; } = new Dictionary<Actions, Bitmap>();
         public ImageIdentifier() { }
         public static Card IdentifyCard(Bitmap card)
         {
@@ -27,6 +30,65 @@ namespace PokerBot.IO
                 }
             }
             return new Card();
+        }
+        public static Actions? IdentifyStatus(Bitmap status)
+        {
+            try
+            {
+                using (var engine = new TesseractEngine(@"./tessdata", "eng", EngineMode.Default))
+                {
+                    using (var page = engine.Process(status))
+                    {
+                        var text = page.GetText();
+                        Console.WriteLine("Mean confidence: {0}", page.GetMeanConfidence());
+
+                        Console.WriteLine("Text (GetText): \r\n{0}", text);
+                        Console.WriteLine("Text (iterator):");
+                        using (var iter = page.GetIterator())
+                        {
+                            iter.Begin();
+
+                            do
+                            {
+                                do
+                                {
+                                    do
+                                    {
+                                        do
+                                        {
+                                            if (iter.IsAtBeginningOf(PageIteratorLevel.Block))
+                                            {
+                                                Console.WriteLine("<BLOCK>");
+                                            }
+
+                                            Console.Write(iter.GetText(PageIteratorLevel.Word));
+                                            Console.Write(" ");
+
+                                            if (iter.IsAtFinalOf(PageIteratorLevel.TextLine, PageIteratorLevel.Word))
+                                            {
+                                                Console.WriteLine();
+                                            }
+                                        } while (iter.Next(PageIteratorLevel.TextLine, PageIteratorLevel.Word));
+
+                                        if (iter.IsAtFinalOf(PageIteratorLevel.Para, PageIteratorLevel.TextLine))
+                                        {
+                                            Console.WriteLine();
+                                        }
+                                    } while (iter.Next(PageIteratorLevel.Para, PageIteratorLevel.TextLine));
+                                } while (iter.Next(PageIteratorLevel.Block, PageIteratorLevel.Para));
+                            } while (iter.Next(PageIteratorLevel.Block));
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Trace.TraceError(e.ToString());
+                Console.WriteLine("Unexpected Error: " + e.Message);
+                Console.WriteLine("Details: ");
+                Console.WriteLine(e.ToString());
+            }
+            return null;
         }
         public static void LoadCardTemplates(string FolderPath)
         {
@@ -48,6 +110,24 @@ namespace PokerBot.IO
                     if(card != null)
                     {
                         CardTemplates[card] = cardTemplate;
+                    }
+                }
+            }
+        }
+        public static void LoadActionTemplates(string FolderPath)
+        {
+            string[] files = Directory.GetFiles(FolderPath + "\\" + Constants.ActionFilesPath, "*.png");
+            foreach (string file in files)
+            {
+                string fileName = Path.GetFileNameWithoutExtension(file);
+                Bitmap actionImage = new(file);
+                actionImage = ConvertToAForgeFormat(actionImage);
+                foreach(Actions action in Enum.GetValues<Actions>())
+                {
+                    if (fileName.Replace("action_","") == action.ToString().ToLower())
+                    {
+                        ActionTemplates[action] = actionImage;
+                        break;
                     }
                 }
             }

@@ -31,11 +31,15 @@ namespace PokerBot.App
         public static void GetGameState()
         {
             GetMyCards();
+            GetOpponents();
         }
         public static void GetMyCards()
         {
-            GameState.Me.HoleCards.Clear();
-            GameState.Me = OutputHandler.GetCards(GameState.Me);
+            GameState.Me.HoleCards = OutputHandler.GetCards(GameState.Me);
+        }
+        public static void GetOpponents()
+        {
+            GameState.Others = OutputHandler.GetOthersStatus();
         }
     }
 }
