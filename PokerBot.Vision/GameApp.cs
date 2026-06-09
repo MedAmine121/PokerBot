@@ -101,7 +101,7 @@ namespace PokerBot.IO
                 AutomationElement? image = window.FindFirstDescendant(cf => cf.ByAutomationId(autoId));
                 if (image == null)
                 {
-                    throw new InvalidOperationException($"Button with AutomationId '{autoId}' not found.");
+                    throw new InvalidOperationException($"Image with AutomationId '{autoId}' not found.");
                 }
                 SetForeground();
                 Bitmap capturedImage = FlaUI.Core.Capturing.Capture.Element(image).Bitmap;
@@ -119,6 +119,7 @@ namespace PokerBot.IO
         {
             ShowWindow(hwnd, 9);
             SetForegroundWindow(hwnd);
+            Thread.Sleep(200);
         }
         public static List<Player> GetOpponents()
         {
