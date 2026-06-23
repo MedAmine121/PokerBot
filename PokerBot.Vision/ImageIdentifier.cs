@@ -59,8 +59,9 @@ namespace PokerBot.IO
         public static Actions? IdentifyStatus(Bitmap status)
         {
             Mat capturedStatusScene = BitmapConverter.ToMat(status);
-            double threshold = 0.95;
-
+            double threshold = 0.8;
+            double lastSimilarity = 0;
+            Actions? statusResult = null;
             using Mat sceneBGR = new Mat();
             if (capturedStatusScene.Channels() == 4)
                 Cv2.CvtColor(capturedStatusScene, sceneBGR, ColorConversionCodes.BGRA2BGR);
@@ -71,7 +72,7 @@ namespace PokerBot.IO
             {
                 Mat templateMat = template.Value;
 
-                using Mat templateBGR = new Mat();
+                using Mat templateBGR = new();
                 Mat alphaMask = new Mat();
 
                 if (templateMat.Channels() == 4)
@@ -108,12 +109,13 @@ namespace PokerBot.IO
 
                 double currentSimilarity = 1.0 - minVal;
 
-                if (currentSimilarity >= threshold)
+                if (currentSimilarity >= threshold && currentSimilarity > lastSimilarity)
                 {
-                    return template.Key;
+                    statusResult = template.Key;
+                    lastSimilarity = currentSimilarity;
                 }
             }
-            return null;
+            return statusResult;
         }
         public static void LoadCardTemplates(string FolderPath)
         {

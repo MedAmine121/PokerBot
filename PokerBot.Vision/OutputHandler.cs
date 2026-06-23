@@ -16,9 +16,14 @@ namespace PokerBot.IO
         {
             return GameApp.GetCards(player);
         }
-        public static List<Player> GetOthersStatus()
+        public static List<Player> GetOpponents()
         {
             return GameApp.GetOpponents();
+        }
+
+        public static void GetBoardInfo()
+        {
+            GameApp.GetBoardInfo();
         }
     }
 }

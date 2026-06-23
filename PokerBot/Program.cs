@@ -7,6 +7,6 @@ using System.Diagnostics;
 using System.Drawing;
 
 
-GameApp.init("pokerth_client");
+GameApp.Init("pokerth_client");
 ApplicationHandler.StartGame();
 
