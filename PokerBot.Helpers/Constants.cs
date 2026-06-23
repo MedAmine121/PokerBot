@@ -14,6 +14,11 @@ namespace PokerBot.Helpers
         public const string GroupId = "QApplication.gameTable.centralwidget";
         public const string Card1Id = "a";
         public const string Card2Id = "b";
+        public const string PotId = "QApplication.gameTable.centralwidget.groupBox_Board.widget_2.textLabel_Pot";
+        public const string TotalBetsId = "QApplication.gameTable.centralwidget.groupBox_Board.widget_2.textLabel_Sets";
+        public const string GameNumberId = "QApplication.gameTable.centralwidget.groupBox_Board.framegameinfo.label_gameNumberValue";
+        public const string HandNumberId = "QApplication.gameTable.centralwidget.groupBox_Board.framegameinfo.label_handNumberValue";
+        public const string BoardStateId = "QApplication.gameTable.centralwidget.groupBox_Board.textLabel_handLabel";
         public const string FlipsideFileName = "flipside";
         public static readonly (string, string) DiamondRange = ("0", "12");
         public static readonly (string, string) HeartsRange = ("13", "25");

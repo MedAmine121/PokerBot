@@ -30,16 +30,9 @@ namespace PokerBot.App
         }
         public static void GetGameState()
         {
-            GetMyCards();
-            GetOpponents();
-        }
-        public static void GetMyCards()
-        {
             GameState.Me.HoleCards = OutputHandler.GetCards(GameState.Me);
-        }
-        public static void GetOpponents()
-        {
-            GameState.Others = OutputHandler.GetOthersStatus();
+            GameState.Others = OutputHandler.GetOpponents();
+            OutputHandler.GetBoardInfo();
         }
     }
 }

@@ -16,6 +16,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace PokerBot.IO
 {
@@ -29,9 +30,9 @@ namespace PokerBot.IO
         [DllImport("user32.dll")]
         private static extern bool SetForegroundWindow(IntPtr hWnd);
 
-        public static void init(string processName)
+        public static void Init(string processName)
         {
-            Process[] processes = Process.GetProcessesByName("pokerth_client");
+            Process[] processes = Process.GetProcessesByName(processName);
             if (processes.Length == 0)
             {
                 return;
@@ -146,6 +147,8 @@ namespace PokerBot.IO
                             Player player = new(match.Groups[1].Value);
                             player.HoleCards = GetCards(player);
                             player.Status = GetPlayerStatus(child);
+                            player.Chips = GetPlayerCash(child);
+                            player.SetChips = GetPlayerSetChips(child);
                             players.Add(player);
                         }
                     }
@@ -171,6 +174,74 @@ namespace PokerBot.IO
                 return ImageIdentifier.IdentifyStatus(status);
             }
             return null;
+        }
+        public static float GetPlayerCash(AutomationElement group)
+        {
+            AutomationElement? element = group.FindFirstChild(element => element.ByAutomationId("Cash", PropertyConditionFlags.MatchSubstring));
+            if (element != null)
+            {
+                _ = float.TryParse(element.Name.Replace("$", ""), out float cash);
+                return cash;
+            }
+            return 0;
+        }
+        public static float GetPlayerSetChips(AutomationElement group)
+        {
+            AutomationElement? element = group.FindFirstChild(element => element.ByAutomationId("Set", PropertyConditionFlags.MatchSubstring));
+            if (element != null)
+            {
+                _ = float.TryParse(element.Name.Replace("$", ""), out float cash);
+                return cash;
+            }
+            return 0;
+        }
+
+        internal static void GetBoardInfo()
+        {
+            if (app == null)
+            {
+                throw new InvalidOperationException("Application is not attached.");
+            }
+            using (var automation = new UIA3Automation())
+            {
+                var window = app.GetMainWindow(automation);
+                var group = window.FindFirstDescendant(cf => cf.ByAutomationId(Constants.BoardStateId));
+                if (group != null)
+                {
+                    if(Enum.TryParse<BoardState>(group.Name, true, out BoardState result))
+                    {
+                        GameState.CurrentBoardState = result;
+                    }
+                    else
+                    {
+                        GameState.CurrentBoardState = BoardState.Ended;
+                    }
+                }
+                group = window.FindFirstDescendant(cf => cf.ByAutomationId(Constants.PotId));
+                if (group != null)
+                {
+                    _ = float.TryParse(group.Name.Replace("$", ""), out float pot);
+                    GameState.PotSize = pot;
+                }
+                group = window.FindFirstDescendant(cf => cf.ByAutomationId(Constants.TotalBetsId));
+                if (group != null)
+                {
+                    _ = float.TryParse(group.Name.Replace("$", ""), out float totalBets);
+                    GameState.TotalBets = totalBets;
+                }
+                group = window.FindFirstDescendant(cf => cf.ByAutomationId(Constants.GameNumberId));
+                if (group != null)
+                {
+                    _ = int.TryParse(group.Name, out int gameNumber);
+                    GameState.GameNumber = gameNumber;
+                }
+                group = window.FindFirstDescendant(cf => cf.ByAutomationId(Constants.PotId));
+                if (group != null)
+                {
+                    _ = int.TryParse(group.Name, out int handNumber);
+                    GameState.HandNumber = handNumber;
+                }
+            }
         }
     }
 }
